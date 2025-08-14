@@ -98,8 +98,8 @@ lp("Calculating SQL Types")
 sqlTypes = {}
 for col in data.columns:
     if data[col].dtype == object:
-        colLen = int(data[col].str.len().max())
-        sqlTypes[col] = sa.VARCHAR(colLen) if colLen > 0 else sa.VARCHAR(1)
+        colLen = data[col].str.len().max()
+        sqlTypes[col] = sa.VARCHAR(int(colLen)) if colLen else sa.VARCHAR(1)
 
 lp(sqlTypes)
 
