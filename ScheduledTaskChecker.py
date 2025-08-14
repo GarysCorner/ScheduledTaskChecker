@@ -99,7 +99,7 @@ sqlTypes = {}
 for col in data.columns:
     if data[col].dtype == object:
         colLen = data[col].str.len().max()
-        sqlTypes[col] = sa.VARCHAR(int(colLen)) if colLen else sa.VARCHAR(1)
+        sqlTypes[col] = sa.VARCHAR(int(colLen)) if not pd.isna(colLen) else sa.VARCHAR(1)
 
 lp(sqlTypes)
 
