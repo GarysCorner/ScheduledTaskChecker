@@ -1,6 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# # Scheduled Task Checker
+# ### By:  Gary Bezet
+# 
+# I got tired of logging into my utility server to check if things had run, and looking up what times thing will next for people
+# So I hacked this out in an hour or so to upload schedule task information to my SQL Sever
+# 
+# It's kinda cowboy but I write code every day and I never get around to santizing it for GitHub and this code has nothing private in it
+# 
+# So here it is
+
 # In[1]:
 
 
@@ -103,7 +113,7 @@ with engine.connect() as conn:
     lp(f"Uploading data to {tmpTable}")
     data.to_sql(tmpTable, conn, schema=schema, dtype=sqlTypes)
     conn.execute(sa.text('commit;'))
-    lp(f"Finished copy data from {tmpTable} -> [{schema}].[{tableName}]")
+    lp(f"Finished copying data from {tmpTable} -> [{schema}].[{tableName}]")
     conn.execute(sa.text(f"""
         begin transaction;
             drop table if exists [{schema}].[{tableName}];
@@ -117,8 +127,8 @@ with engine.connect() as conn:
 lp("Finished")
 
 
-# In[ ]:
+# In[12]:
 
 
-#jupyter nbconvert --to python .\ScheduleTaskChecker.ipynb
+#jupyter nbconvert --to python .\ScheduledTaskChecker.ipynb
 
