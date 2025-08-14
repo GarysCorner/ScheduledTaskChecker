@@ -46,7 +46,7 @@ engine = sa.create_engine(environ.get("KNOS_Datawarehouse"), fast_executemany=Tr
 lp(engine)
 
 
-# In[5]:
+# In[ ]:
 
 
 procArgs = ["schtasks.exe", "/query", "/FO", "CSV", "/v"]
@@ -61,7 +61,7 @@ results.flush()
 results.seek(0)
 
 
-# In[6]:
+# In[ ]:
 
 
 lp("Loading results to Pandas dataframe")
@@ -69,14 +69,14 @@ data = pd.read_csv(results)
 lp(f"Dataframe shape:  {data.shape}")
 
 
-# In[7]:
+# In[ ]:
 
 
 lp("Dropping rows with column labels")
 data = data[data['HostName'] != 'HostName'].copy()
 
 
-# In[8]:
+# In[ ]:
 
 
 for col in ['Next Run Time', 'Last Run Time']:
@@ -84,14 +84,14 @@ for col in ['Next Run Time', 'Last Run Time']:
     data[col] = pd.to_datetime(data[col], format="%m/%d/%Y %H:%M:%S %p")
 
 
-# In[9]:
+# In[ ]:
 
 
 for col in ['Last Result']:
     lp(f"Changing [{col}] to int")
 
 
-# In[10]:
+# In[ ]:
 
 
 lp("Calculating SQL Types")
@@ -104,15 +104,14 @@ for col in data.columns:
 lp(sqlTypes)
 
 
-# In[11]:
+# In[ ]:
 
 
 lp(f"Connecting to {engine}")
 with engine.connect() as conn:
     tmpTable = '#looktmptable'
     lp(f"Uploading data to {tmpTable}")
-    data.to_sql(tmpTable, conn, schema=schema, dtype=sqlTypes)
-    conn.execute(sa.text('commit;'))
+    data.to_sql(tmpTable, conn, dtype=sqlTypes)
     lp(f"Finished copying data from {tmpTable} -> [{schema}].[{tableName}]")
     conn.execute(sa.text(f"""
         begin transaction;
@@ -123,11 +122,13 @@ with engine.connect() as conn:
 
         commit transaction;
     """))
+    conn.commit()
+
 
 lp("Finished")
 
 
-# In[12]:
+# In[ ]:
 
 
 #jupyter nbconvert --to python .\ScheduledTaskChecker.ipynb
